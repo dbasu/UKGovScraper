@@ -31,7 +31,7 @@ class URLCreator:
             target_url += "&public_timestamp[to][year]=" + str(end_date.year)
         if self.search.get('organisations', None) is not None:
             for org in self.search['organisations']:
-                target_url += "&organisations%5B%5D=" + org
+                target_url += "&organisations[]=" + org
         self.target_url = target_url
     
     def set_max_page(self, max_page: int) -> None:
