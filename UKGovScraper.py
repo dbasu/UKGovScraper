@@ -43,7 +43,7 @@ class UKGovScraper:
             f.write(content)
             self.logger.info("Page " + str(page) + " saved.")
 
-    def get_page(self, url:str, page:int) -> bs4.BeautifulSoup:
+    def get_page(self, url:str, page:int) -> BeautifulSoup:
         r = self.s.get(url, headers=self.headers, timeout=self.timeout) 
         if r.status_code == 200:
             self.save_page(page=page, content=r.content)
@@ -53,7 +53,7 @@ class UKGovScraper:
             return None
 
     def scrape(self, search: Dict) -> str:
-        self.u.set_search_parameter(search=search)
+        self.u.set_search_parameters(search=search)
         self.u.create_url()
         self.url = self.u.target_url
         soup = self.get_page(url=self.url, page=1)

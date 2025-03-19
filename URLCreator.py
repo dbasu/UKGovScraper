@@ -20,12 +20,12 @@ class URLCreator:
         if self.search.get('order', None) is not None:
             target_url += "&order=updated-newest"
         if self.search.get('start', None) is not None:
-            start_date = datetime.strptime(self.search['start'])
+            start_date = datetime.strptime(self.search['start'], '%Y-%m-%d')
             target_url += "&public_timestamp[from][day]=" + str(start_date.day)
             target_url += "&public_timestamp[from][month]=" + str(start_date.month)
             target_url += "&public_timestamp[from][year]=" + str(start_date.year)
         if self.search.get('end', None) is not None:
-            end_date = datetime.strptime(self.search['end'])
+            end_date = datetime.strptime(self.search['end'], '%Y-%m-%d')
             target_url += "&public_timestamp[to][day]=" + str(end_date.day)
             target_url += "&public_timestamp[to][month]=" + str(end_date.month)
             target_url += "&public_timestamp[to][year]=" + str(end_date.year)
