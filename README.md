@@ -20,7 +20,7 @@ from URLCreator import URLCreator
 from UKGovScraper import UKGovScraper
 
 settings = {
-    'search_terms': ['electric vehicle', 'funding amount'],
+    'search_terms': ['electric vehicle', 'funding amount', 'chargepoint'],
     'order': 'updated-newest',
     'start': '2025-03-01',
     # 'end': '2024-12-31',
@@ -38,6 +38,11 @@ search_results = s.scrape(settings)
 - `start` (str): Start date for filtering results (`YYYY-MM-DD`).
 - `end` (str, optional): End date for filtering results (`YYYY-MM-DD`).
 - `organisations` (list, optional): List of organisations to filter results by.
+
+### Example Search Parameters
+
+For the above settings, this is the search result:
+![image](./res/screenshot.png)
 
 ## Contributing
 

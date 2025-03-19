@@ -36,6 +36,8 @@ class UKGovScraper:
         self.links = []
         self.timeout = 30
         self.idle_time = 300
+        self.max_page = None
+        self.url = None
 
     def save_page(self, page: int, content)-> None:
         self.filename = os.path.join(self.dir, 'page' + str(page) + '.html')
@@ -70,11 +72,11 @@ class UKGovScraper:
                     self.logger.info("Max pages: " + str(self.max_page))
                     break
             self.links = self.get_links(soup)
-            
-            #sleep
-            time.sleep(self.idle_time)
 
         if self.max_page is not None:
+            #sleep
+            self.logger.info("Max pages: 1")
+            time.sleep(self.idle_time)
             #loop through pages
             for page in range(2, self.max_page):
                 self.url = self.u.next_page()
@@ -84,30 +86,49 @@ class UKGovScraper:
 
                 # sleep
                 time.sleep(self.idle_time)
-        return json.dumps(self.links)
+        return (self.links)
 
 
     def get_links(self, soup: BeautifulSoup) -> list:
-        links = []
+        result = []
         for row in soup.find_all('li', class_='gem-c-document-list__item'):
-            a = row.find('a')
-            p = row.find('p')
-            ul = row.find('ul')
+
             published_date = None
             title = None
             description = None
             link = None
-            if ul is not None:
-                published_date = ul.get('time', None)
-            if p is not None:
-                description = p.get('text', None)
-            if a is not None:
-                title = a.get('text', None)
-                if 'href' in a.attrs:
-                    if a['href'].startswith('/'):
-                        link = 'https://www.gov.uk' + a['href']
-                    else:
-                        link = a['href']
-            links.append([published_date, title, description, link])
 
-        return links
+            a = row.find_all('a', class_ ="govuk-link")
+            p = row.find_all('p')
+            ul = row.find_all('ul', class_="gem-c-document-list__item-metadata")
+            if ul is not None:
+                if len(ul) > 0:
+                    li = ul[0].find_all('li', class_="gem-c-document-list__attribute")
+                else:
+                    li = None
+
+            if li is not None:
+                time_element = None
+                if len(li) > 0:
+                    time_element = li[0].find('time')
+                if time_element is not None:
+                    published_date = time_element.get('datetime')
+                    self.logger.info(published_date)
+                        
+            if p is not None:
+                if len(p) > 0:
+                    description = p[0].text.strip()
+                    self.logger.info(description)
+            if a is not None:
+                if len(a) > 0:
+                    title = a[0].text.strip()
+                    self.logger.info(title)
+                    if 'href' in a[0].attrs:
+                        if a[0]['href'].startswith('/'):
+                            link = 'https://www.gov.uk' + a[0].get('href', None)
+                        else:
+                            link = a[0].get('href', None)
+                        self.logger.info(link)
+            result.append([published_date, title, description, link])
+
+        return result
