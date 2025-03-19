@@ -6,6 +6,7 @@ import logging
 from URLCreator import URLCreator
 from http import cookiejar
 from typing import Dict, Union
+import time
 
 class RejectAll(cookiejar.CookiePolicy):
     return_ok = set_ok = domain_return_ok = path_return_ok = lambda self, *args, **kwargs: False
@@ -34,6 +35,7 @@ class UKGovScraper:
         #set up output
         self.links = []
         self.timeout = 30
+        self.idle_time = 300
 
     def save_page(self, page: int, content)-> None:
         self.filename = os.path.join(self.dir, 'page' + str(page) + '.html')
@@ -67,9 +69,10 @@ class UKGovScraper:
                     self.u.set_max_page(max_page=self.max_page)
                     self.logger.info("Max pages: " + str(self.max_page))
                     break
-            self.links.extend(self.get_links(soup))
+            self.links = self.get_links(soup)
             
             #sleep
+            time.sleep(self.idle_time)
 
         if self.max_page is not None:
             #loop through pages
@@ -80,9 +83,9 @@ class UKGovScraper:
                     self.links.extend(self.get_links(soup))
 
                 # sleep
+                time.sleep(self.idle_time)
+        return json.dumps(self.links)
 
-        else:
-            logging.error("Error: " + str(r.status_code))
 
     def get_links(self, soup: BeautifulSoup) -> list:
         links = []
